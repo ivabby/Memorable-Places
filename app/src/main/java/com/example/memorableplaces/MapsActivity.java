@@ -97,8 +97,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapLongClickListener(this);
 
         Intent intent = getIntent();
-        if(intent.getIntExtra("placeNumber" , 0) == 0){
+        int position = intent.getIntExtra("placeNumber" , 0);
+        Log.d(TAG, "onMapReady: position " + position);
+
+        if(position == 0){
             //  Zoom in to user's location
+            Log.d(TAG, "onMapReady: set new location ");
 
             locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
@@ -137,6 +141,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
         else{
+            Log.d(TAG, "onMapReady: setting marker ");
+
+            Location placeLocation = new Location(LocationManager.GPS_PROVIDER);
+            placeLocation.setLatitude(MainActivity.locations.get(position).latitude);
+            placeLocation.setLongitude(MainActivity.locations.get(position).longitude);
+            centerMapOnLocation(placeLocation , MainActivity.places.get(position));
 
         }
 
@@ -208,5 +218,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Log.d(TAG, "onMapLongClick: address " + mapAddress);
         mMap.addMarker(new MarkerOptions().position(latLng).title(mapAddress));
+
+        MainActivity.locations.add(latLng);
+        MainActivity.places.add(mapAddress);
+
+        MainActivity.arrayAdapter.notifyDataSetChanged();
+
+        Toast.makeText(this , "Location Saved" , Toast.LENGTH_SHORT).show();
     }
 }
