@@ -32,8 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         places = new ArrayList<>();
         locations = new ArrayList<>();
-
-
+            
         places.add("Add a new place...");
         locations.add(new LatLng(0,0));
 
