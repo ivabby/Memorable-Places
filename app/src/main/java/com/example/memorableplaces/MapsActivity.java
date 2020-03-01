@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -28,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -221,6 +223,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         MainActivity.locations.add(latLng);
         MainActivity.places.add(mapAddress);
+
+        SharedPreferences sharedPreferences = this.getSharedPreferences("com.example.memorableplaces" , Context.MODE_PRIVATE);
+
+        /*
+            Adding to the storage
+         */
+        try{
+            ArrayList<String> latitude = new ArrayList<>();
+            ArrayList<String> longitude = new ArrayList<>();
+
+            MainActivity.locations.remove(0);
+            MainActivity.places.remove(0);
+            for(LatLng coordinates : MainActivity.locations){
+                latitude.add(Double.toString(coordinates.latitude));
+                longitude.add(Double.toString(coordinates.longitude));
+            }
+
+
+            sharedPreferences.edit().putString("places" , ObjectSerializer.serialize(MainActivity.places)).apply();
+            sharedPreferences.edit().putString("latitude" , ObjectSerializer.serialize(latitude)).apply();
+            sharedPreferences.edit().putString("longitude" , ObjectSerializer.serialize(longitude)).apply();
+
+
+
+//            sharedPreferences.edit().putString("places" , ObjectSerializer.serialize(new ArrayList<String>())).apply();
+//            sharedPreferences.edit().putString("latitude" , ObjectSerializer.serialize(new ArrayList<String>())).apply();
+//            sharedPreferences.edit().putString("longitude" , ObjectSerializer.serialize(new ArrayList<String>())).apply();
+            MainActivity.places.add(0 , "Add a new place");
+            MainActivity.locations.add(0 , new LatLng(0 , 0));
+        } catch (Exception e){
+            Log.e(TAG, "onMapLongClick: error " + e.getMessage() );
+        }
 
         MainActivity.arrayAdapter.notifyDataSetChanged();
 
